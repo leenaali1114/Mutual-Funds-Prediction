@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold">Predict Mutual Fund Returns</h1>
+                <p class="lead">Use machine learning to forecast 1-year, 3-year, and 5-year returns for mutual funds based on their characteristics.</p>
+                <div class="mt-4">
+                    <a href="/predict" class="btn btn-primary btn-lg">Make a Prediction</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="{{ url_for('static', filename='images/investment.jpg') }}" alt="Investment Illustration" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="features-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h5 class="card-title">Data-Driven</h5>
+                        <p class="card-text">Our models are trained on comprehensive mutual fund data to provide accurate predictions.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h5 class="card-title">Machine Learning</h5>
+                        <p class="card-text">Advanced algorithms analyze patterns to forecast future returns across different time horizons.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h5 class="card-title">Visual Results</h5>
+                        <p class="card-text">Get clear visualizations of predicted returns to help with your investment decisions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="info-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 order-lg-2">
+                <h2>Make Informed Investment Decisions</h2>
+                <p>Our prediction tool helps you:</p>
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item bg-transparent"><i class="fas fa-check-circle text-success me-2"></i> Compare potential returns across different funds</li>
+                    <li class="list-group-item bg-transparent"><i class="fas fa-check-circle text-success me-2"></i> Understand how fund characteristics affect performance</li>
+                    <li class="list-group-item bg-transparent"><i class="fas fa-check-circle text-success me-2"></i> Plan for short, medium, and long-term investments</li>
+                </ul>
+                <a href="/predict" class="btn btn-outline-primary">Try It Now</a>
+            </div>
+            <div class="col-lg-6 order-lg-1">
+                <img src="{{ url_for('static', filename='images/analysis.jpg') }}" alt="Analysis Illustration" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

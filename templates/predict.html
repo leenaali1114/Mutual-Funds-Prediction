@@ -1,0 +1,155 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-magic me-2"></i>Predict Mutual Fund Returns</h3>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                    {% endif %}
+                    
+                    <p class="lead mb-4">Enter the mutual fund details below to predict its future returns. Hover over each field label for more information.</p>
+                    
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i> All fields are pre-filled with recommended values. You can adjust them based on your specific fund details.
+                    </div>
+                    
+                    <form method="POST" action="/predict">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="mb-3">Fund Details</h4>
+                                
+                                <div class="mb-3">
+                                    <label for="amc_name" class="form-label" data-bs-toggle="tooltip" title="Asset Management Company that manages the fund">AMC Name</label>
+                                    <select class="form-select" id="amc_name" name="amc_name" required>
+                                        <option value="" disabled>Select AMC</option>
+                                        {% for amc in amc_names %}
+                                        <option value="{{ amc }}" {% if amc == "HDFC Mutual Fund" %}selected{% endif %}>{{ amc }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">The company that manages the mutual fund</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="category" class="form-label" data-bs-toggle="tooltip" title="Primary investment category of the fund">Category</label>
+                                    <select class="form-select" id="category" name="category" required>
+                                        <option value="" disabled>Select Category</option>
+                                        {% for category in categories %}
+                                        <option value="{{ category }}" {% if category == "Equity" %}selected{% endif %}>{{ category }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">Main investment category (Equity, Debt, Hybrid, etc.)</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="sub_category" class="form-label" data-bs-toggle="tooltip" title="Specific sub-category within the main category">Sub-Category</label>
+                                    <select class="form-select" id="sub_category" name="sub_category" required>
+                                        <option value="" disabled>Select Sub-Category</option>
+                                        {% for sub_category in sub_categories %}
+                                        <option value="{{ sub_category }}" {% if sub_category == "Large Cap Mutual Funds" %}selected{% endif %}>{{ sub_category }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">Specific fund type within the main category</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="min_sip" class="form-label" data-bs-toggle="tooltip" title="Minimum Systematic Investment Plan amount">Minimum SIP (₹)</label>
+                                    <input type="number" class="form-control" id="min_sip" name="min_sip" min="0" value="1000" required>
+                                    <small class="form-text text-muted">Minimum monthly investment amount allowed (typically 500-1000)</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="min_lumpsum" class="form-label" data-bs-toggle="tooltip" title="Minimum one-time investment amount">Minimum Lumpsum (₹)</label>
+                                    <input type="number" class="form-control" id="min_lumpsum" name="min_lumpsum" min="0" value="5000" required>
+                                    <small class="form-text text-muted">Minimum one-time investment amount allowed (typically 1000-5000)</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="expense_ratio" class="form-label" data-bs-toggle="tooltip" title="Annual fee charged by the fund as a percentage of assets">Expense Ratio (%)</label>
+                                    <input type="number" class="form-control" id="expense_ratio" name="expense_ratio" min="0" max="3" step="0.01" value="1.2" required>
+                                    <small class="form-text text-muted">Annual fee charged by the fund (typically 0.1% to 2.5%)</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="fund_size_cr" class="form-label" data-bs-toggle="tooltip" title="Total assets under management in crores">Fund Size (₹ Cr)</label>
+                                    <input type="number" class="form-control" id="fund_size_cr" name="fund_size_cr" min="0" value="5000" required>
+                                    <small class="form-text text-muted">Total assets managed by the fund in crores of rupees (100-20000)</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="fund_age_yr" class="form-label" data-bs-toggle="tooltip" title="Number of years since the fund's inception">Fund Age (Years)</label>
+                                    <input type="number" class="form-control" id="fund_age_yr" name="fund_age_yr" min="0" max="50" value="10" required>
+                                    <small class="form-text text-muted">How long the fund has been in existence (typically 1-20 years)</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h4 class="mb-3">Performance Metrics</h4>
+                                
+                                <div class="mb-3">
+                                    <label for="sortino" class="form-label" data-bs-toggle="tooltip" title="Measures return adjusted for downside risk">Sortino Ratio</label>
+                                    <input type="number" class="form-control" id="sortino" name="sortino" step="0.01" value="2.5" required>
+                                    <small class="form-text text-muted">Measures excess return per unit of downside risk (typically 0.5 to 4)</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="alpha" class="form-label" data-bs-toggle="tooltip" title="Excess return compared to benchmark">Alpha</label>
+                                    <input type="number" class="form-control" id="alpha" name="alpha" step="0.01" value="1.5" required>
+                                    <small class="form-text text-muted">Excess return relative to benchmark (typically -3 to +5)</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="sd" class="form-label" data-bs-toggle="tooltip" title="Standard Deviation - Measures volatility of returns">Standard Deviation</label>
+                                    <input type="number" class="form-control" id="sd" name="sd" min="0" step="0.01" value="15" required>
+                                    <small class="form-text text-muted">Volatility measure (equity: 15-25, debt: 1-5, hybrid: 5-15)</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="beta" class="form-label" data-bs-toggle="tooltip" title="Measures sensitivity to market movements">Beta</label>
+                                    <input type="number" class="form-control" id="beta" name="beta" step="0.01" value="0.95" required>
+                                    <small class="form-text text-muted">Market sensitivity (1=moves with market, <1=less volatile, >1=more volatile)</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="sharpe" class="form-label" data-bs-toggle="tooltip" title="Measures risk-adjusted return">Sharpe Ratio</label>
+                                    <input type="number" class="form-control" id="sharpe" name="sharpe" step="0.01" value="1.2" required>
+                                    <small class="form-text text-muted">Risk-adjusted return measure (higher is better, typically 0.5 to 2)</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="risk_level" class="form-label" data-bs-toggle="tooltip" title="Risk level on a scale of 1-6 (1=lowest, 6=highest)">Risk Level (1-6)</label>
+                                    <input type="number" class="form-control" id="risk_level" name="risk_level" min="1" max="6" value="4" required>
+                                    <small class="form-text text-muted">Fund's risk rating (1=lowest risk, 6=highest risk)</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="rating" class="form-label" data-bs-toggle="tooltip" title="Fund rating on a scale of 0-5 stars">Rating (0-5)</label>
+                                    <input type="number" class="form-control" id="rating" name="rating" min="0" max="5" value="4" required>
+                                    <small class="form-text text-muted">Star rating assigned to the fund (0-5, higher is better)</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <a href="/" class="btn btn-secondary btn-lg me-2">
+                                <i class="fas fa-home me-2"></i>Back to Home
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-calculator me-2"></i>Predict Returns
+                            </button>
+                            <button type="reset" class="btn btn-outline-secondary btn-lg ms-2">
+                                <i class="fas fa-undo me-2"></i>Reset Form
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

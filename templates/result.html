@@ -1,0 +1,158 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0"><i class="fas fa-chart-line me-2"></i>Prediction Results</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h4 class="text-center mb-4">Predicted Returns</h4>
+                            <div class="chart-container">
+                                <canvas id="returnsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="card text-center h-100 prediction-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">1 Year Return</h5>
+                                    <p class="prediction-value {% if result.pred_1yr > 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ result.pred_1yr }}%
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center h-100 prediction-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">3 Year Return</h5>
+                                    <p class="prediction-value {% if result.pred_3yr > 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ result.pred_3yr }}%
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center h-100 prediction-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">5 Year Return</h5>
+                                    <p class="prediction-value {% if result.pred_5yr > 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ result.pred_5yr }}%
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-5">
+                        <div class="col-md-12">
+                            <h4>Fund Details</h4>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <tbody>
+                                        <tr>
+                                            <th>AMC Name</th>
+                                            <td>{{ result.input_data.amc_name }}</td>
+                                            <th>Category</th>
+                                            <td>{{ result.input_data.category }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Sub-Category</th>
+                                            <td>{{ result.input_data.sub_category }}</td>
+                                            <th>Risk Level</th>
+                                            <td>{{ result.input_data.risk_level }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Expense Ratio</th>
+                                            <td>{{ result.input_data.expense_ratio }}%</td>
+                                            <th>Fund Size</th>
+                                            <td>₹{{ result.input_data.fund_size_cr }} Cr</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Fund Age</th>
+                                            <td>{{ result.input_data.fund_age_yr }} years</td>
+                                            <th>Rating</th>
+                                            <td>{{ result.input_data.rating }}/5</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="/predict" class="btn btn-primary">
+                            <i class="fas fa-redo me-2"></i>Make Another Prediction
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('returnsChart').getContext('2d');
+        
+        const returnsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['1 Year', '3 Years', '5 Years'],
+                datasets: [{
+                    label: 'Predicted Returns (%)',
+                    data: [
+                        {{ result.pred_1yr }}, 
+                        {{ result.pred_3yr }}, 
+                        {{ result.pred_5yr }}
+                    ],
+                    backgroundColor: [
+                        {% if result.pred_1yr > 0 %}'rgba(40, 167, 69, 0.7)'{% else %}'rgba(220, 53, 69, 0.7)'{% endif %},
+                        {% if result.pred_3yr > 0 %}'rgba(40, 167, 69, 0.7)'{% else %}'rgba(220, 53, 69, 0.7)'{% endif %},
+                        {% if result.pred_5yr > 0 %}'rgba(40, 167, 69, 0.7)'{% else %}'rgba(220, 53, 69, 0.7)'{% endif %}
+                    ],
+                    borderColor: [
+                        {% if result.pred_1yr > 0 %}'rgba(40, 167, 69, 1)'{% else %}'rgba(220, 53, 69, 1)'{% endif %},
+                        {% if result.pred_3yr > 0 %}'rgba(40, 167, 69, 1)'{% else %}'rgba(220, 53, 69, 1)'{% endif %},
+                        {% if result.pred_5yr > 0 %}'rgba(40, 167, 69, 1)'{% else %}'rgba(220, 53, 69, 1)'{% endif %}
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Returns (%)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.raw + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %} 
